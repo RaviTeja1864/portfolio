@@ -3,24 +3,15 @@
 // ===== CURSOR =====
 const cursor = document.getElementById('cursor');
 const cursorDot = document.getElementById('cursorDot');
-let mouseX = 0, mouseY = 0;
-let cursorX = 0, cursorY = 0;
 
 document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  cursorDot.style.left = mouseX + 'px';
-  cursorDot.style.top = mouseY + 'px';
+  // Cursor dot follows instantly
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  // Ring follows with slight lag
+  cursorDot.style.left = e.clientX + 'px';
+  cursorDot.style.top = e.clientY + 'px';
 });
-
-function animateCursor() {
-  cursorX += (mouseX - cursorX) * 0.12;
-  cursorY += (mouseY - cursorY) * 0.12;
-  cursor.style.left = cursorX + 'px';
-  cursor.style.top = cursorY + 'px';
-  requestAnimationFrame(animateCursor);
-}
-animateCursor();
 
 // Cursor hover effects
 const hoverables = document.querySelectorAll('a, button, .service-card, .project-card, .filter-btn, .skill-pill, .stat-pill, .float-chip');
@@ -177,22 +168,45 @@ filterBtns.forEach(btn => {
   });
 });
 
-// ===== CONTACT FORM =====
-document.getElementById('contactForm').addEventListener('submit', (e) => {
+// ===== CONTACT FORM — FORMSPREE =====
+const contactForm = document.getElementById('contactForm');
+const submitBtn = document.getElementById('submitBtn');
+
+contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const btn = e.target.querySelector('button[type="submit"]');
-  btn.textContent = 'Sending... ⏳';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = 'Message Sent! 🎉';
-    btn.style.background = 'var(--accent-green)';
+  submitBtn.textContent = 'Sending... ⏳';
+  submitBtn.disabled = true;
+
+  const formData = new FormData(contactForm);
+
+  try {
+    const response = await fetch('https://formspree.io/f/meerwgya', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      submitBtn.textContent = 'Message Sent! 🎉';
+      submitBtn.style.background = 'var(--accent-green)';
+      contactForm.reset();
+      setTimeout(() => {
+        submitBtn.textContent = 'Send Message 🚀';
+        submitBtn.disabled = false;
+        submitBtn.style.background = '';
+      }, 4000);
+    } else {
+      throw new Error('Failed');
+    }
+  } catch (error) {
+    submitBtn.textContent = 'Failed — Try Again ❌';
+    submitBtn.style.background = '#c0392b';
+    submitBtn.disabled = false;
     setTimeout(() => {
-      btn.textContent = 'Send Message 🚀';
-      btn.disabled = false;
-      btn.style.background = '';
-      e.target.reset();
+      submitBtn.textContent = 'Send Message 🚀';
+      submitBtn.style.background = '';
     }, 3000);
-  }, 1500);
+  }
 });
 
 // ===== SMOOTH SCROLL for all anchor links =====
