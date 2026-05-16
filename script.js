@@ -27,9 +27,9 @@ const phrases = [
   'builds Full-Stack Web Apps',
   'loves Django REST APIs',
   'crafts React Interfaces',
-  'dockerizes Everything 🐳',
-  'automates with n8n 🤖',
-  'ships Production Code 🚀',
+  'dockerizes Everything',
+  'automates with n8n',
+  'ships Production Code',
 ];
 let phraseIdx = 0, charIdx = 0, deleting = false;
 const typeEl = document.getElementById('typewriter');
@@ -57,24 +57,6 @@ function typeLoop() {
 typeLoop();
 
 // ===== THEME TOGGLE =====
-const themeToggle = document.getElementById('themeToggle');
-const themeIcon = document.getElementById('themeIcon');
-const html = document.documentElement;
-
-function setTheme(theme) {
-  html.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-  themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
-}
-
-const savedTheme = localStorage.getItem('theme') || 'dark';
-setTheme(savedTheme);
-
-themeToggle.addEventListener('click', () => {
-  const current = html.getAttribute('data-theme');
-  setTheme(current === 'dark' ? 'light' : 'dark');
-});
-
 // ===== NAVBAR SCROLL =====
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
@@ -126,18 +108,7 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
 aosElements.forEach(el => observer.observe(el));
 
-// ===== SKILL BAR ANIMATIONS =====
-const skillBars = document.querySelectorAll('.bar-fill');
-const skillObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const width = entry.target.dataset.width;
-      setTimeout(() => { entry.target.style.width = width + '%'; }, 200);
-      skillObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.3 });
-skillBars.forEach(bar => skillObserver.observe(bar));
+
 
 // ===== PROJECT FILTER =====
 const filterBtns = document.querySelectorAll('.filter-btn');
@@ -168,13 +139,54 @@ filterBtns.forEach(btn => {
   });
 });
 
-// ===== CONTACT FORM — FORMSPREE =====
+// ===== CONTACT FORM REVEAL =====
+const showFormBtn = document.getElementById('showFormBtn');
+const hideFormBtn = document.getElementById('hideFormBtn');
+const connectTrigger = document.getElementById('connectTrigger');
 const contactForm = document.getElementById('contactForm');
 const submitBtn = document.getElementById('submitBtn');
 
+if (showFormBtn && hideFormBtn && connectTrigger && contactForm) {
+  const tl = gsap.timeline({ paused: true });
+
+  tl.to(connectTrigger, {
+    duration: 0.4,
+    opacity: 0,
+    scale: 0.9,
+    y: -20,
+    ease: 'power2.inOut'
+  })
+  .set(connectTrigger, { display: 'none' })
+  .set(contactForm, { display: 'block' })
+  .fromTo(contactForm, 
+    { opacity: 0, y: 20, scale: 0.98 },
+    {
+      duration: 0.5,
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      ease: 'back.out(1.2)',
+      clearProps: 'will-change'
+    }
+  );
+
+  showFormBtn.addEventListener('click', () => {
+    contactForm.style.willChange = 'transform, opacity';
+    tl.play();
+  });
+
+  hideFormBtn.addEventListener('click', () => {
+    tl.reverse();
+  });
+}
+
+// ===== CONTACT FORM — FORMSPREE =====
+if (contactForm && submitBtn) {
+
 contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  submitBtn.textContent = 'Sending... ⏳';
+  submitBtn.innerHTML = 'Sending... <i data-lucide="loader-2" class="animate-spin" style="width:16px;height:16px;vertical-align:middle;margin-left:5px;"></i>';
+  lucide.createIcons();
   submitBtn.disabled = true;
 
   const formData = new FormData(contactForm);
@@ -187,27 +199,32 @@ contactForm.addEventListener('submit', async (e) => {
     });
 
     if (response.ok) {
-      submitBtn.textContent = 'Message Sent! 🎉';
+      submitBtn.innerHTML = 'Message Sent! <i data-lucide="check-circle-2" style="width:16px;height:16px;vertical-align:middle;margin-left:5px;"></i>';
       submitBtn.style.background = 'var(--accent-green)';
       contactForm.reset();
+      lucide.createIcons();
       setTimeout(() => {
-        submitBtn.textContent = 'Send Message 🚀';
+        submitBtn.innerHTML = 'Send Message <i data-lucide="send" style="width:16px;height:16px;vertical-align:middle;margin-left:5px;"></i>';
         submitBtn.disabled = false;
         submitBtn.style.background = '';
+        lucide.createIcons();
       }, 4000);
     } else {
       throw new Error('Failed');
     }
   } catch (error) {
-    submitBtn.textContent = 'Failed — Try Again ❌';
+    submitBtn.innerHTML = 'Failed — Try Again <i data-lucide="x-circle" style="width:16px;height:16px;vertical-align:middle;margin-left:5px;"></i>';
     submitBtn.style.background = '#c0392b';
     submitBtn.disabled = false;
+    lucide.createIcons();
     setTimeout(() => {
-      submitBtn.textContent = 'Send Message 🚀';
+      submitBtn.innerHTML = 'Send Message <i data-lucide="send" style="width:16px;height:16px;vertical-align:middle;margin-left:5px;"></i>';
       submitBtn.style.background = '';
+      lucide.createIcons();
     }, 3000);
   }
-});
+  });
+}
 
 // ===== SMOOTH SCROLL for all anchor links =====
 document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -253,20 +270,177 @@ document.querySelectorAll('.float-chip').forEach(chip => {
   });
 });
 
-// ===== MARQUEE PAUSE ON HOVER =====
-const marqueeInner = document.getElementById('marqueeInner');
-const marqueeInner2 = document.getElementById('marqueeInner2');
-if (marqueeInner) {
-  marqueeInner.closest('.marquee-track')?.addEventListener('mouseenter', () => marqueeInner.style.animationPlayState = 'paused');
-  marqueeInner.closest('.marquee-track')?.addEventListener('mouseleave', () => marqueeInner.style.animationPlayState = 'running');
-}
-if (marqueeInner2) {
-  marqueeInner2.closest('.marquee-track')?.addEventListener('mouseenter', () => marqueeInner2.style.animationPlayState = 'paused');
-  marqueeInner2.closest('.marquee-track')?.addEventListener('mouseleave', () => marqueeInner2.style.animationPlayState = 'running');
+
+
+// ===== PROJECT ARCHIVE MODAL =====
+window.openProjectModal = function() {
+  const modal = document.getElementById('projectModal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Manually trigger animations for cards inside the modal since it's fixed
+    const cards = modal.querySelectorAll('[data-aos]');
+    cards.forEach((card, i) => {
+      setTimeout(() => card.classList.add('aos-animate'), i * 150 + 100);
+    });
+  }
+};
+
+window.closeProjectModal = function() {
+  const modal = document.getElementById('projectModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    
+    // Reset animations so they play again next time
+    setTimeout(() => {
+      const cards = modal.querySelectorAll('[data-aos]');
+      cards.forEach(card => card.classList.remove('aos-animate'));
+    }, 400); // Wait for modal close transition
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const closeProjBtn = document.getElementById('closeProjectModal');
+  const projOverlay = document.getElementById('projectOverlay');
+  if (closeProjBtn) closeProjBtn.onclick = window.closeProjectModal;
+  if (projOverlay) projOverlay.onclick = window.closeProjectModal;
+
+  /* ===== ANIMATED FOLDER PHYSICS ===== */
+  const papers = document.querySelectorAll('.custom-folder .paper');
+  papers.forEach(paper => {
+    paper.addEventListener('mousemove', (e) => {
+      const rect = paper.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const offsetX = (e.clientX - centerX) * 0.15;
+      const offsetY = (e.clientY - centerY) * 0.15;
+      
+      paper.style.setProperty('--magnet-x', `${offsetX}px`);
+      paper.style.setProperty('--magnet-y', `${offsetY}px`);
+    });
+
+    paper.addEventListener('mouseleave', () => {
+      paper.style.setProperty('--magnet-x', '0px');
+      paper.style.setProperty('--magnet-y', '0px');
+    });
+  });
+});
+
+// ===== SCROLL REVEAL ANIMATION =====
+function initScrollReveal() {
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  const revealElements = document.querySelectorAll('[data-scroll-reveal]');
+
+  revealElements.forEach(el => {
+    // 1. Recursive word splitter to preserve HTML tags (like <span class="accent">)
+    function wrapWords(node) {
+      if (node.nodeType === 3) { // Text node
+        const text = node.nodeValue;
+        const words = text.split(/(\s+)/);
+        const fragment = document.createDocumentFragment();
+        
+        words.forEach(word => {
+          if (word.match(/^\s+$/)) {
+            fragment.appendChild(document.createTextNode(word));
+          } else if (word) {
+            const span = document.createElement('span');
+            span.className = 'scroll-word';
+            span.textContent = word;
+            fragment.appendChild(span);
+          }
+        });
+        node.parentNode.replaceChild(fragment, node);
+      } else if (node.nodeType === 1) { // Element node
+        const children = Array.from(node.childNodes);
+        children.forEach(wrapWords);
+      }
+    }
+
+    wrapWords(el);
+
+    const words = el.querySelectorAll('.scroll-word');
+
+    // 2. Container Rotation Animation
+    gsap.fromTo(el, 
+      { transformOrigin: '0% 50%', rotate: 3 },
+      {
+        rotate: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom 80%',
+          scrub: true
+        }
+      }
+    );
+
+    // 3. Word Animation (Opacity + Blur)
+    gsap.fromTo(words,
+      { opacity: 0.1, filter: 'blur(8px)' },
+      {
+        opacity: 1,
+        filter: 'blur(0px)',
+        stagger: 0.1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom-=10%',
+          end: 'bottom 70%',
+          scrub: true
+        }
+      }
+    );
+  });
+
+  // 4. Background Orbs Parallax & Vanish
+  gsap.to('.orb-1', {
+    y: -400,
+    opacity: 0,
+    ease: 'power1.out',
+    scrollTrigger: {
+      trigger: '.hero',
+      start: 'top top',
+      end: 'bottom center',
+      scrub: 1.5
+    }
+  });
+
+  gsap.to('.orb-3', {
+    y: -200,
+    opacity: 0,
+    ease: 'power1.out',
+    scrollTrigger: {
+      trigger: '.hero',
+      start: 'top top',
+      end: 'bottom center',
+      scrub: 1.2
+    }
+  });
 }
 
 // ===== PAGE LOAD ANIMATION =====
+// ===== INITIALIZE ALL =====
 window.addEventListener('load', () => {
+  initScrollReveal();
+  initScrollFloat('[data-scroll-float]', {
+    animationDuration: 1,
+    ease: 'back.inOut(2)',
+    scrollStart: 'top bottom',
+    scrollEnd: 'bottom 60%',
+    stagger: 0.03
+  });
+  
+  // Initialize Lucide
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+
+  // Page Fade In
   document.body.style.opacity = '0';
   document.body.style.transition = 'opacity 0.5s ease';
   requestAnimationFrame(() => {
@@ -274,33 +448,18 @@ window.addEventListener('load', () => {
   });
 });
 
-// ===== STAT COUNTER ANIMATION =====
-function animateCounter(el, target, suffix = '') {
-  let current = 0;
-  const increment = target / 60;
-  const timer = setInterval(() => {
-    current += increment;
-    if (current >= target) {
-      current = target;
-      clearInterval(timer);
-    }
-    el.textContent = Math.floor(current) + suffix;
-  }, 25);
-}
-const statObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.querySelectorAll('.why-stat-n').forEach(n => {
-        const text = n.textContent;
-        const num = parseInt(text);
-        const suffix = text.replace(/[0-9]/g, '');
-        if (!isNaN(num)) animateCounter(n, num, suffix);
-      });
-      statObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.5 });
-document.querySelectorAll('.why-stats').forEach(el => statObserver.observe(el));
+// ===== PREVENT ZOOM =====
+window.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+    e.preventDefault();
+  }
+});
+
+window.addEventListener('wheel', (e) => {
+  if (e.ctrlKey) {
+    e.preventDefault();
+  }
+}, { passive: false });
 
 console.log('%c Ravi Teja Portfolio 🚀', 'color: #E95420; font-size: 20px; font-weight: bold;');
 console.log('%c Built with ❤️ in Bengaluru', 'color: #772953; font-size: 14px;');
