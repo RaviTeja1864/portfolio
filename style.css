@@ -38,9 +38,9 @@
 html { 
   scroll-behavior: smooth; 
   overflow-x: hidden; 
-  zoom: 1.00;
-  -moz-transform: scale(1.00);
-  -moz-transform-origin: 0 0;
+  zoom: 1.10;
+  -moz-transform: scale(1.10);
+  -moz-transform-origin: top left;
 }
 body {
   font-family: 'Outfit', sans-serif;
