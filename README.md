@@ -3,7 +3,7 @@
 A high-performance, modern, and interactive portfolio built with React.js and Vite. It features 3D CSS animations, custom cursors, dynamic components, and heavily optimized WebP assets for a lightning-fast premium user experience.
 
 ## 🔗 Live Preview
-👉 **[View Portfolio Live](https://raviteja1864.github.io/portfolio)** *(Update with your actual deployed URL)*
+👉 https://portfolio-raviteja.vercel.app/
 
 ## 📂 File Structure
 
