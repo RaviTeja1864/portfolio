@@ -1540,7 +1540,6 @@ svg.lucide {
   .reader-hero { height: 350px; padding: 2rem; }
   .reader-title { font-size: 2rem; }
   .pillars-grid { grid-template-columns: 1fr; }
-}
   button { cursor: pointer; }
   .footer-bottom { flex-direction: column; text-align: center; }
 }
